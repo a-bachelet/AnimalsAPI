@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+/** On importe fichiers de configuration */
+const databaseConfig = require('./app/config/database');
+
 /** On instancie l'application */
 const app = express();
 
@@ -10,38 +13,21 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-/** On charge le modèle */
-const animalModel = require('./app/models/animal');
+/** On importe les routers */
+const animalRouter = require('./app/routers/animalRouter');
 
-/** Routing */
-app.post('/animals', (req, res) => {
+/** On créé le router API */
+const apiRouter = express.Router();
 
-    const body = req.body;
+apiRouter.use('/animals', animalRouter);
 
-    animalModel.create({
-        name: body.name,
-        color: body.color,
-        legsNumber: body.legsNumber || null,
-        activities: body.activities
-    }, (err, animal) => {
-        if (err) throw err;
+/** On implémente le router API */
 
-        res.status(201).send({ success: true, animal: animal });
-    });
-
-});
-
-app.get('/animals', (req, res) => {
-    const animals = animalModel.find({}, (err, animals) => {
-        if (err) throw err;
-
-        res.status(200).send({ success: true, animals: animals });
-    });
-});
+app.use('/api', apiRouter);
 
 
 /** Connexion à la base MongoDB */
-mongoose.connect('mongodb://localhost/AnimalsAPI', { useMongoClient: true }, (err) => {
+mongoose.connect(databaseConfig.url, { useMongoClient: true }, (err) => {
     if (err) throw err;
     console.log('Connexion établie à la base de données');
 });
