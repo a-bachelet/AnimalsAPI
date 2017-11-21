@@ -15,11 +15,15 @@ app.use(bodyParser.json());
 
 /** On importe les routers */
 const animalRouter = require('./app/routers/animalRouter');
+const authRouter = require('./app/routers/authRouter');
+const userRouter = require('./app/routers/userRouter');
 
 /** On créé le router API */
 const apiRouter = express.Router();
 
 apiRouter.use('/animals', animalRouter);
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/users', userRouter);
 
 /** On implémente le router API */
 
